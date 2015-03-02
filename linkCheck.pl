@@ -2,14 +2,23 @@
 #
 # Script to automatically run the following tests for modems
 # Ping, FTP Download and FTP Upload
-# Additionally the script gets the information from the modem
+#
+# Additionally the script collects information from the modem
+#
+# Supported Modems:
+# 1. Cradlepoint CBA750B
+# 2. Cradlepoint IBR350L
+# 3. Zyxel DSL Modem P-6551
+#
 #
 # See the associated configuration file for details. This file
 # doesn't needs to be modified by a user.
 #
 # Author: Gaurav Sabharwal (gaurav.sabharwal@hughes.com)
-# Version: 1.0
-# Date: 02/22/15
+#
+# Version   Date        Comment
+# 1.0       02/22/15    Initial Version
+# 1.1       03/01/15    updated sshpass to timeout after 5 seconds
 #
 # To Do:
 # 1. Auto detect modem
@@ -198,7 +207,7 @@ sub getCpStats {
     my $ipaddress = $config{cpIp};
 
     # Retrieve configuration and status using ssh if the unit is reachable
-    my $cpconfig = `sshpass -p $password ssh $user\@$ipaddress "get" 2>&1`;
+    my $cpconfig = `sshpass -p $password ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user\@$ipaddress "get" 2>&1`;
 
     if ( $cpconfig =~ /Permission denied/ ) {
         &LogIt("Invalid password");
@@ -337,7 +346,6 @@ sub getZyxelStats {
     my ( $ipaddress, $user, $password ) = @_;
 
 # Retrieve configuration and status using ssh if the unit is reachable
-#my $zyconfig = `sshpass -p $password ssh $user\@$ipaddress "adsl info --stats" 2>&1`;
     my $zyconfig =
 `echo "adsl info --stats" | sshpass -p $password ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $user\@$ipaddress 2>&1`;
 
