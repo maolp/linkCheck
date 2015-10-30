@@ -112,7 +112,7 @@ else {
 
 #now collect the FTP test data
 
-my $ftp = Net::FTP->new( $parm{ftphost}, Debug => 0 )
+my $ftp = Net::FTP->new( $parm{ftphost}, Debug => 0, Passive => 'True' )
   or LogIt( 'exit', "Error connecting. Network or server problem," );
 
 $ftp->login( $parm{ftpuser}, $parm{ftppass} )
